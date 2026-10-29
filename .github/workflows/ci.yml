@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build (API + Web)
+    runs-on: ubuntu-latest
+
+    env:
+      # Valor fictício apenas para o build (nunca use segredos reais no CI)
+      DATABASE_URL: "file:./dev.db"
+      JWT_SECRET: "ci-build-placeholder-secret"
+      JWT_EXPIRES_IN: "7d"
+      NEXT_PUBLIC_API_URL: "http://localhost:3001/api"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Gerar cliente Prisma
+        run: npm run db:generate
+
+      - name: Build da API (NestJS)
+        run: npm run build:api
+
+      - name: Build do Web (Next.js)
+        run: npm run build:web
