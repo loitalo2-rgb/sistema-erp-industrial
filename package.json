@@ -1,0 +1,34 @@
+{
+  "name": "sistema-erp-industrial",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sistema ERP de Gestão Industrial & MRP I sob medida",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev:all",
+    "dev:all": "npm run dev:api & npm run dev:web",
+    "dev:api": "npm --workspace=apps/api run start:dev",
+    "dev:web": "npm --workspace=apps/web run dev",
+    "build:api": "npm --workspace=apps/api run build",
+    "build:web": "npm --workspace=apps/web run build",
+    "build": "npm run build:api && npm run build:web",
+    "db:generate": "npm --workspace=apps/api run prisma:generate",
+    "db:migrate": "npm --workspace=apps/api run prisma:migrate",
+    "db:studio": "npm --workspace=apps/api run prisma:studio",
+    "db:seed": "npm --workspace=apps/api run prisma:seed"
+  },
+  "keywords": [
+    "erp",
+    "mrp",
+    "industria",
+    "manufatura",
+    "pcp",
+    "producao",
+    "financeiro",
+    "dre"
+  ],
+  "author": "Italo Contabilidade",
+  "license": "ISC"
+}

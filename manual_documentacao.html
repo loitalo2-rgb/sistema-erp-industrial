@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Manual do Usuário e Documentação Técnica — ERP Industrial</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 18mm 16mm 18mm 16mm;
+      @bottom-right {
+        content: counter(page);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+      color: #1e293b;
+      background-color: #ffffff;
+      line-height: 1.55;
+      font-size: 11pt;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* CAPA */
+    .cover {
+      page-break-after: always;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 96vh;
+      padding: 40px 20px;
+      border: 3px solid #0369a1;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #f0f7ff 0%, #ffffff 60%, #f8fafc 100%);
+    }
+
+    .cover-header {
+      border-bottom: 2px solid #0284c7;
+      padding-bottom: 20px;
+    }
+
+    .cover-tag {
+      display: inline-block;
+      background-color: #0369a1;
+      color: white;
+      font-size: 9pt;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .cover-title {
+      font-size: 26pt;
+      font-weight: 800;
+      color: #0f172a;
+      margin: 18px 0 8px 0;
+      line-height: 1.2;
+    }
+
+    .cover-subtitle {
+      font-size: 14pt;
+      color: #475569;
+      font-weight: 500;
+      margin: 0;
+    }
+
+    .cover-body {
+      margin: 40px 0;
+    }
+
+    .cover-card {
+      background: white;
+      border: 1px solid #cbd5e1;
+      border-left: 6px solid #0284c7;
+      padding: 16px 20px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    }
+
+    .cover-card h4 {
+      margin: 0 0 6px 0;
+      color: #0369a1;
+      font-size: 12pt;
+    }
+
+    .cover-card p {
+      margin: 0;
+      font-size: 10pt;
+      color: #64748b;
+    }
+
+    .cover-footer {
+      border-top: 1px solid #e2e8f0;
+      padding-top: 15px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 9.5pt;
+      color: #64748b;
+    }
+
+    /* SEÇÕES E PÁGINAS */
+    .page-break {
+      page-break-after: always;
+    }
+
+    h1 {
+      font-size: 18pt;
+      color: #0c4a6e;
+      border-bottom: 2px solid #0284c7;
+      padding-bottom: 6px;
+      margin-top: 0;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    h2 {
+      font-size: 14pt;
+      color: #0369a1;
+      margin-top: 22px;
+      margin-bottom: 10px;
+      border-left: 4px solid #0284c7;
+      padding-left: 10px;
+    }
+
+    h3 {
+      font-size: 12pt;
+      color: #1e293b;
+      margin-top: 16px;
+      margin-bottom: 6px;
+    }
+
+    p {
+      margin: 0 0 10px 0;
+      text-align: justify;
+    }
+
+    ul, ol {
+      margin: 6px 0 14px 20px;
+      padding: 0;
+    }
+
+    li {
+      margin-bottom: 5px;
+    }
+
+    /* TABELAS */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0 20px 0;
+      font-size: 9.5pt;
+      page-break-inside: avoid;
+    }
+
+    th {
+      background-color: #0f172a;
+      color: white;
+      text-align: left;
+      padding: 8px 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 8.5pt;
+      letter-spacing: 0.5px;
+    }
+
+    td {
+      padding: 8px 12px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    tr:nth-child(even) td {
+      background-color: #f8fafc;
+    }
+
+    /* CALLOUTS E BOXES */
+    .callout {
+      background-color: #f0f9ff;
+      border-left: 4px solid #0284c7;
+      border-radius: 6px;
+      padding: 12px 16px;
+      margin: 14px 0;
+      page-break-inside: avoid;
+    }
+
+    .callout-title {
+      font-weight: 700;
+      color: #0369a1;
+      margin-bottom: 4px;
+      font-size: 10pt;
+    }
+
+    .callout-tip {
+      background-color: #f0fdf4;
+      border-left: 4px solid #16a34a;
+    }
+    .callout-tip .callout-title {
+      color: #15803d;
+    }
+
+    .callout-warning {
+      background-color: #fffbeb;
+      border-left: 4px solid #f59e0b;
+    }
+    .callout-warning .callout-title {
+      color: #b45309;
+    }
+
+    /* BADGES */
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 8pt;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .badge-blue { background-color: #e0f2fe; color: #0369a1; }
+    .badge-green { background-color: #dcfce7; color: #15803d; }
+    .badge-amber { background-color: #fef3c7; color: #b45309; }
+    .badge-purple { background-color: #f3e8ff; color: #7e22ce; }
+
+    /* CODE BOXES */
+    pre, code {
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 9pt;
+    }
+
+    code {
+      background-color: #f1f5f9;
+      color: #0f172a;
+      padding: 2px 5px;
+      border-radius: 4px;
+      border: 1px solid #e2e8f0;
+    }
+
+    pre {
+      background-color: #0f172a;
+      color: #f8fafc;
+      padding: 12px 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 10px 0 16px 0;
+      line-height: 1.4;
+      page-break-inside: avoid;
+    }
+
+    /* FLUXO VISUAL */
+    .flow-container {
+      display: flex;
+      gap: 10px;
+      margin: 14px 0;
+      page-break-inside: avoid;
+    }
+
+    .flow-step {
+      flex: 1;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .flow-number {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #0284c7;
+      color: white;
+      font-weight: bold;
+      font-size: 10pt;
+      line-height: 24px;
+      margin-bottom: 6px;
+    }
+
+    .flow-title {
+      font-size: 9.5pt;
+      font-weight: bold;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+
+    .flow-desc {
+      font-size: 8pt;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CAPA -->
+  <div class="cover">
+    <div class="cover-header">
+      <span class="cover-tag">Documentação Oficial v1.0</span>
+      <h1 class="cover-title">ERP INDUSTRIAL & MRP I</h1>
+      <p class="cover-subtitle">Manual do Usuário & Especificação Técnica da Arquitetura</p>
+    </div>
+
+    <div class="cover-body">
+      <div class="cover-card">
+        <h4>Manual Operacional Didático</h4>
+        <p>Guia passo a passo desenvolvido para novos usuários, operadores e gestores entenderem como operar cada módulo da fábrica: Engenharia (BOM), PCP, Apontamento Touch em Chão de Fábrica, Estoque FIFO e DRE Financeiro.</p>
+      </div>
+
+      <div class="cover-card">
+        <h4>Documentação Técnica da Programação</h4>
+        <p>Detalhamento de engenharia de software do ecossistema: Frontend React/Next.js 14, Backend Node.js/NestJS em TypeScript, Modelagem Relacional de Banco de Dados com Prisma ORM e Algoritmo de Cálculo MRP I.</p>
+      </div>
+
+      <div class="cover-card">
+        <h4>Status de Execução</h4>
+        <p>Sistemas em execução ativa localmente nas portas 3000 (Web) e 3001 (API), com banco de dados relacional e autenticação com controle de permissões (RBAC).</p>
+      </div>
+    </div>
+
+    <div class="cover-footer">
+      <div><strong>Emissão:</strong> Outubro de 2026</div>
+      <div><strong>Empresa:</strong> Italo Contabilidade & Indústria</div>
+      <div><strong>Ambiente:</strong> Produção / Homologação Local</div>
+    </div>
+  </div>
+
+  <!-- PÁGINA 1: VISÃO GERAL E ACESSO -->
+  <div>
+    <h1>1. Visão Geral do Sistema e Acesso Inicial</h1>
+    
+    <p>O <strong>ERP Industrial & MRP I</strong> é uma plataforma integrada sob medida desenvolvida para gerenciar de ponta a ponta as operações de uma manufatura. O sistema resolve o desafio de conectar a área comercial, a engenharia de produtos, o planejamento da produção (PCP), a execução no chão de fábrica e a apuração contábil/financeira (DRE).</p>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">Endereços de Acesso Local aos Serviços</div>
+      <p>• <strong>Interface Web do Usuário (Frontend):</strong> <a href="http://localhost:3000">http://localhost:3000</a><br/>
+      • <strong>Servidor de APIs e Regras de Negócio (Backend):</strong> <a href="http://localhost:3001/api">http://localhost:3001/api</a></p>
+    </div>
+
+    <h2>1.1. Como Fazer o Primeiro Acesso (Login)</h2>
+    <p>Para garantir a segurança das informações operacionais e financeiras, o sistema opera com autenticação via tokens criptografados (JWT) e níveis de acesso (RBAC).</p>
+
+    <ol>
+      <li>Abra o navegador de sua preferência (Edge, Chrome, Firefox) e acesse <code>http://localhost:3000/login</code>.</li>
+      <li>Informe as credenciais corporativas do administrador configuradas na instalação:
+        <ul>
+          <li><strong>E-mail:</strong> <code>admin@erp.local</code></li>
+          <li><strong>Senha:</strong> <code>admin123</code></li>
+        </ul>
+      </li>
+      <li>Clique no botão <strong>"Entrar no Sistema"</strong>. O sistema autenticará as credenciais no backend e redirecionará automaticamente para o <em>Painel Geral</em>.</li>
+    </ol>
+
+    <div class="callout callout-warning">
+      <div class="callout-title">Nota de Segurança</div>
+      <p>O token de sessão permanece salvo de forma segura no navegador. Cada requisição ao backend é validada contra o perfil do operador (ex: Operador não tem permissão para alterar o DRE financeiro).</p>
+    </div>
+
+    <h2>1.2. O Fluxo Operacional Integrado do ERP</h2>
+    <p>O ERP funciona através de gatilhos automáticos entre os módulos. Quando uma ação ocorre em um departamento, o sistema alimenta os departamentos subsequentes sem retrabalho manual:</p>
+
+    <div class="flow-container">
+      <div class="flow-step">
+        <div class="flow-number">1</div>
+        <div class="flow-title">Pedido Venda</div>
+        <div class="flow-desc">Comercial lança venda aprovada do cliente</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-number">2</div>
+        <div class="flow-title">Cálculo MRP</div>
+        <div class="flow-desc">Explosão da BOM e verificação de saldo</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-number">3</div>
+        <div class="flow-title">Ordem de Produção</div>
+        <div class="flow-desc">Reserva de matéria-prima e liberação</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-number">4</div>
+        <div class="flow-title">Chão de Fábrica</div>
+        <div class="flow-desc">Apontamento de operador e baixa de estoque</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-number">5</div>
+        <div class="flow-title">DRE & Caixa</div>
+        <div class="flow-desc">Atualização instantânea do lucro e custos</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- PÁGINA 2: MANUAL DOS MÓDULOS (PARTE 1) -->
+  <div>
+    <h1>2. Manual do Usuário: Telas e Operações</h1>
+
+    <h2>2.1. Painel Geral de Operações (Dashboard)</h2>
+    <p><strong>Acesso:</strong> Menu lateral &rarr; <em>Painel Geral</em> (ou rota raiz <code>/</code>).</p>
+    <p>Esta tela reúne os principais Indicadores-Chave de Desempenho (KPIs) da indústria para tomada de decisão rápida pela gerência:</p>
+    <ul>
+      <li><strong>OEE da Planta (Overall Equipment Effectiveness):</strong> Mostra o percentual de eficiência real das máquinas considerando disponibilidade, desempenho e qualidade. O sistema compara com a meta operacional (ex: 80%).</li>
+      <li><strong>Ordens de Produção (OP) Ativas:</strong> Quantidade de lotes em andamento no chão de fábrica e lotes já liberados pelo PCP aguardando máquina.</li>
+      <li><strong>Gatilho de Estoque Mínimo:</strong> Alerta em tempo real sobre matérias-primas que atingiram o limite crítico de segurança e precisam de compra urgente.</li>
+      <li><strong>Resultado Operacional (DRE Sintético):</strong> Lucro acumulado no período e margem líquida gerencial.</li>
+    </ul>
+
+    <h2>2.2. Cadastros Base: Itens e Parceiros Comerciais</h2>
+    <p><strong>Acesso:</strong> Menu lateral &rarr; <em>Cadastros Base</em> (rota <code>/cadastros</code>).</p>
+    <p>É a espinha dorsal de dados do sistema, dividida em duas abas funcionais:</p>
+
+    <h3>Aba 1: Cadastro de Itens e Insumos</h3>
+    <p>Permite registrar e consultar qualquer item físico que circula pela fábrica:</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Campo</th>
+          <th>Tipo</th>
+          <th>Descrição e Importância</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Código</strong></td>
+          <td>Texto</td>
+          <td>Identificador único (SKU). Ex: <code>MP-CHAPA-01</code> ou <code>PA-ARMARIO-01</code>.</td>
+        </tr>
+        <tr>
+          <td><strong>Tipo de Item</strong></td>
+          <td>Seleção</td>
+          <td><span class="badge badge-blue">Matéria-Prima</span>, <span class="badge badge-green">Produto Acabado</span>, <span class="badge badge-amber">Semiacabado</span> ou <span class="badge badge-purple">Embalagem</span>.</td>
+        </tr>
+        <tr>
+          <td><strong>Unidade</strong></td>
+          <td>Seleção</td>
+          <td>KG, UN, Metros (M) ou Litros (L).</td>
+        </tr>
+        <tr>
+          <td><strong>Custo Unitário (R$)</strong></td>
+          <td>Valor</td>
+          <td>Valor de compra para alimentar o Custo dos Produtos Vendidos (CPV).</td>
+        </tr>
+        <tr>
+          <td><strong>Estoque Mínimo</strong></td>
+          <td>Quantidade</td>
+          <td>Gatilho que avisa o setor de compras antes que a matéria-prima esgote.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Aba 2: Cadastro de Parceiros (Clientes & Fornecedores)</h3>
+    <p>Armazena a carteira comercial de clientes para emissão de pedidos e fornecedores para envio de ordens de cotação e importação de notas fiscais XML.</p>
+
+    <h2>2.3. Engenharia de Produto & BOM (Bill of Materials)</h2>
+    <p><strong>Acesso:</strong> Menu lateral &rarr; <em>Engenharia (BOM)</em> (rota <code>/engenharia</code>).</p>
+    <p>A BOM é a <strong>fórmula/receita industrial</strong> do produto. Nesta tela, o usuário visualiza:</p>
+    <ul>
+      <li><strong>Estrutura em Árvore:</strong> Quais matérias-primas e componentes semiacabados compõem 1 unidade do produto acabado.</li>
+      <li><strong>Coeficiente de Consumo:</strong> Quantidade exata gasta por unidade fabricada (ex: 18,5 KG de chapa de aço por armário).</li>
+      <li><strong>Perda Técnica Estimada (%):</strong> Margem de refugo natural no processo (ex: 3% de sobra de corte), calculada automaticamente pelo MRP.</li>
+      <li><strong>Tempo Padrão de Fabricação:</strong> Minutos previstos de máquina e montagem para cálculo de capacidade de fábrica.</li>
+    </ul>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- PÁGINA 3: MANUAL DOS MÓDULOS (PARTE 2) -->
+  <div>
+    <h1>3. Manual do Usuário: PCP, Chão de Fábrica e Financeiro</h1>
+
+    <h2>3.1. PCP — Planejamento MRP I & Ordens de Produção</h2>
+    <p><strong>Acesso:</strong> Menu lateral &rarr; <em>PCP & MRP I</em> (rota <code>/pcp</code>).</p>
+    <p>O <strong>MRP I (Material Requirements Planning)</strong> é o cérebro do planejamento industrial. Como utilizá-lo:</p>
+    <ol>
+      <li>Selecione o <strong>Produto Acabado</strong> que a fábrica deseja produzir.</li>
+      <li>Digite a <strong>Quantidade a Produzir</strong> (ex: 50 unidades).</li>
+      <li>Clique no botão <strong>"Executar Explosão MRP"</strong>.</li>
+      <li><strong>Interpretação do Resultado:</strong>
+        <ul>
+          <li>O sistema multiplica a quantidade pelas receitas cadastradas na BOM;</li>
+          <li>Consulta o saldo real do estoque;</li>
+          <li>Se o saldo for insuficiente, gera uma indicação em vermelho: <span class="badge badge-amber">Gerar Ordem de Compra</span>;</li>
+          <li>Se houver saldo suficiente, exibe em verde: <span class="badge badge-green">Estoque Disponível</span>.</li>
+        </ul>
+      </li>
+      <li>Clique em <strong>"Emitir Ordem de Produção (OP)"</strong> para autorizar o início da fabricação.</li>
+    </ol>
+
+    <h2>3.2. Chão de Fábrica — Terminal Touch para o Operador</h2>
+    <p><strong>Acesso:</strong> Menu lateral &rarr; <em>Chão de Fábrica</em> (rota <code>/chao-de-fabrica</code>).</p>
+    <p>Projetado especificamente para ser usado em tablets industriais ou telas sensíveis ao toque na linha de produção:</p>
+    <ul>
+      <li><strong>Identificação do Posto:</strong> O operador visualiza sua máquina (ex: <code>CT-CORTE — Máquina Laser CNC</code>) e a OP em produção.</li>
+      <li><strong>Botão Touch "Iniciar Operação":</strong> Dispara a contagem do tempo de fabricação real.</li>
+      <li><strong>Contador de Peças Boas (+ / -):</strong> Botões grandes para o operador registrar peças inspecionadas e aprovadas.</li>
+      <li><strong>Contador de Peças Refugadas (+ / -):</strong> Registro de peças com defeito de corte/solda para cálculo de perdas financeiras.</li>
+      <li><strong>Botão "Concluir Ciclo":</strong> Finaliza a produção, registrando o histórico no banco de dados e dando entrada imediata no produto acabado.</li>
+    </ul>
+
+    <h2>3.3. Suprimentos, Estoque & Rastreabilidade FIFO</h2>
+    <p><strong>Acesso:</strong> Menu lateral &rarr; <em>Estoque & Lotes</em> (rota <code>/estoque</code>).</p>
+    <p>Gerencia a integridade física dos materiais:</p>
+    <ul>
+      <li><strong>Controle de Lotes:</strong> Cada recebimento possui número de lote e data de entrada.</li>
+      <li><strong>Regra FIFO (First In, First Out / PEPS):</strong> O sistema garante que o lote mais antigo seja consumido primeiro na linha de montagem, evitando deterioração ou vencimento.</li>
+      <li><strong>Importação XML NF-e:</strong> Leitura de notas fiscais eletrônicas de fornecedores para entrada em lote sem digitação.</li>
+    </ul>
+
+    <h2>3.4. Financeiro Integrado & DRE Gerencial</h2>
+    <p><strong>Acesso:</strong> Menu lateral &rarr; <em>Financeiro & DRE</em> (rota <code>/financeiro</code>).</p>
+    <p>Apresenta a demonstração contábil do resultado do exercício baseada em eventos reais da fábrica:</p>
+    <ul>
+      <li><strong>Receita Bruta:</strong> Somatório de todos os pedidos de venda faturados.</li>
+      <li><strong>Custo dos Produtos Vendidos (CPV):</strong> Soma dos insumos consumidos nas OPs somado ao custo/hora dos centros de trabalho.</li>
+      <li><strong>Lucro Bruto Industrial:</strong> Margem de contribuição direta da manufatura.</li>
+      <li><strong>Resultado Líquido e Margens (%):</strong> Indicador de rentabilidade líquida da indústria.</li>
+    </ul>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- PÁGINA 4: ESPECIFICAÇÃO TÉCNICA E PROGRAMAÇÃO -->
+  <div>
+    <h1>4. Especificação Técnica da Programação</h1>
+
+    <h2>4.1. Arquitetura de Software Monorepo</h2>
+    <p>O projeto foi construído no padrão <strong>Monorepo com Workspaces npm</strong>, permitindo que frontend e backend compartilhem configurações, tipagens e coexistam de forma organizada em um único repositório:</p>
+
+    <pre>
+sistema erp italo contabilidade/
+├── apps/
+│   ├── api/                          # Backend NestJS 10 (TypeScript)
+│   │   ├── prisma/
+│   │   │   ├── schema.prisma         # Schema ORM (Modelagem de Dados)
+│   │   │   ├── schema.postgresql.prisma # Backup pronto para Postgres Enterprise
+│   │   │   └── seed.ts               # Script de carga inicial de homologação
+│   │   └── src/
+│   │       ├── common/               # Enums universais (UserRole, ItemType, etc.)
+│   │       ├── modules/              # Módulos desacoplados de domínio
+│   │       │   ├── auth/             # JWT, Criptografia bcrypt e Guards RBAC
+│   │       │   ├── cadastros/        # Controladores e Serviços de Itens/Parceiros
+│   │       │   ├── engenharia/       # Gerenciamento de BOMs e Centros
+│   │       │   ├── mrp/              # Motor do Algoritmo MRP I
+│   │       │   ├── producao/         # Ciclo de vida da OP e Apontamentos
+│   │       │   ├── estoque/          # Movimentações e Lotes FIFO
+│   │       │   ├── vendas/           # Orçamentos e Pedidos Comerciais
+│   │       │   └── financeiro/       # Apuração contábil DRE e Contas
+│   │       ├── prisma/               # Provedor global de conexão Prisma
+│   │       ├── app.module.ts         # Módulo raiz de injeção de dependências
+│   │       └── main.ts               # Bootstrap do NestJS (CORS, Pipes, Port 3001)
+│   │
+│   └── web/                          # Frontend Next.js 14 (App Router)
+│       └── src/
+│           ├── app/                  # Rotas (page, login, cadastros, pcp, chao-de-fabrica...)
+│           ├── components/           # Componentes UI (Sidebar, Header, MetricCard)
+│           └── lib/api.ts            # Cliente HTTP com injeção automática de Bearer Token
+│
+├── docker-compose.yml                # Configuração para PostgreSQL 16 + pgAdmin
+├── package.json                      # Orquestrador de scripts npm do monorepo
+└── .env                              # Variáveis de ambiente configuradas
+    </pre>
+
+    <h2>4.2. O Algoritmo Matemático do MRP I (Implementação Técnica)</h2>
+    <p>O serviço <code>MrpService</code> (localizado em <code>apps/api/src/modules/mrp/mrp.service.ts</code>) processa as necessidades de materiais aplicando a fórmula de explosão com perdas técnicas:</p>
+
+    <div class="callout">
+      <div class="callout-title">Equações do Motor de MRP</div>
+      <p>
+        1. <strong>Necessidade Bruta ($NB$):</strong><br/>
+        <code>NB = Quantidade_Solicitada &times; Coeficiente_BOM &times; (1 + Taxa_Perda / 100)</code><br/><br/>
+        2. <strong>Saldo Real em Estoque ($SE$):</strong><br/>
+        <code>SE = &sum; (Entradas_Compra + Entradas_Producao) - &sum; (Saidas_Producao + Saidas_Venda)</code><br/><br/>
+        3. <strong>Necessidade Líquida ($NL$):</strong><br/>
+        <code>NL = Math.max(0, NB - SE)</code><br/><br/>
+        4. <strong>Tomada de Decisão do Algoritmo:</strong><br/>
+        Se <code>NL &gt; 0</code> e item for <em>Matéria-Prima</em> &rarr; <code>EMITIR_ORDEM_COMPRA</code>.<br/>
+        Se <code>NL &gt; 0</code> e item for <em>Semiacabado</em> &rarr; <code>EMITIR_ORDEM_PRODUCAO</code>.<br/>
+        Se <code>NL == 0</code> &rarr; <code>ESTOQUE_SUFICIENTE</code> (Gera reserva de saldo).
+      </p>
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- PÁGINA 5: BANCO DE DADOS E GUIA DE COMANDOS -->
+  <div>
+    <h1>5. Modelagem do Banco de Dados & Guia de Comandos</h1>
+
+    <h2>5.1. Entidades Principais (Prisma Schema)</h2>
+    <p>A modelagem de dados foi estruturada com integridade referencial estrita e transações ACID:</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Tabela (Model)</th>
+          <th>Função no Sistema</th>
+          <th>Relacionamentos Principais</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>users</code></td>
+          <td>Usuários e operadores autenticados</td>
+          <td>Possui histórico em <code>production_logs</code></td>
+        </tr>
+        <tr>
+          <td><code>partners</code></td>
+          <td>Clientes e Fornecedores</td>
+          <td>Vinculado a <code>sale_orders</code> e <code>purchase_orders</code></td>
+        </tr>
+        <tr>
+          <td><code>items</code></td>
+          <td>Catálogo de materiais e produtos</td>
+          <td>Pai em <code>boms</code>, filho em <code>bom_items</code>, estoque em <code>stock_lots</code></td>
+        </tr>
+        <tr>
+          <td><code>boms</code></td>
+          <td>Cabeçalho da estrutura de produto</td>
+          <td>1 Item Produto Acabado &rarr; N <code>bom_items</code></td>
+        </tr>
+        <tr>
+          <td><code>production_orders</code></td>
+          <td>Ordens de Produção (OP)</td>
+          <td>Vinculada ao Produto, Pedido e Apontamentos</td>
+        </tr>
+        <tr>
+          <td><code>production_logs</code></td>
+          <td>Apontamentos de horas/peças do operador</td>
+          <td>Registra operador, centro de trabalho e refugos</td>
+        </tr>
+        <tr>
+          <td><code>stock_movements</code></td>
+          <td>Kardex contábil de movimentações</td>
+          <td>Alimenta saldos e rastreia NF-e / OP de origem</td>
+        </tr>
+        <tr>
+          <td><code>financial_transactions</code></td>
+          <td>Contas a pagar, receber e DRE</td>
+          <td>Categorizado por <code>DRECategory</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>5.2. Guia de Comandos Rápidos para Manutenção</h2>
+    <p>Para desenvolvedores e administradores que precisem gerenciar o sistema via linha de comando:</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Comando</th>
+          <th>O que executa</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>npm run dev:web</code></td>
+          <td>Inicia o frontend Next.js na porta 3000 em modo desenvolvimento com Hot-Reload.</td>
+        </tr>
+        <tr>
+          <td><code>npm run dev:api</code></td>
+          <td>Inicia a API NestJS na porta 3001 com monitoramento de alterações de código.</td>
+        </tr>
+        <tr>
+          <td><code>npm run build</code></td>
+          <td>Compila ambos os módulos (API e Web) para produção gerando os pacotes finais.</td>
+        </tr>
+        <tr>
+          <td><code>npm run db:seed</code></td>
+          <td>Executa o script de carga inicial recriando os dados de teste e o usuário Admin.</td>
+        </tr>
+        <tr>
+          <td><code>npx prisma studio</code></td>
+          <td>Abre uma interface visual no navegador para inspecionar e editar qualquer tabela do banco.</td>
+        </tr>
+        <tr>
+          <td><code>docker compose up -d</code></td>
+          <td>Sobe o container do banco PostgreSQL corporativo e pgAdmin (porta 5050).</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-tip" style="margin-top: 30px;">
+      <div class="callout-title">Resumo de Entrega</div>
+      <p>O sistema encontra-se estruturado, funcional e pronto para uso operacional da Fase 1 (Fundação e Autenticação) e Fase 2 (Cadastros Base, Terminal de Fábrica e DRE). As etapas futuras (Semana 3 a 8) poderão ser ativadas conforme a demanda da indústria.</p>
+    </div>
+  </div>
+
+</body>
+</html>

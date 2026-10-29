@@ -1,0 +1,318 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ==========================================
+// 1. AUTENTICAÇÃO E PERMISSÕES (RBAC)
+// ==========================================
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("OPERADOR") // ADMIN, ENGENHARIA, PCP, OPERADOR, COMPRAS, VENDAS, FINANCEIRO
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  productionLogs ProductionLog[]
+
+  @@map("users")
+}
+
+// ==========================================
+// 2. CADASTROS BASE (PARCEIROS & ITENS)
+// ==========================================
+model Partner {
+  id          String      @id @default(uuid())
+  code        String      @unique
+  name        String
+  tradeName   String?
+  docNumber   String      @unique // CNPJ ou CPF
+  type        String      @default("CLIENTE") // CLIENTE, FORNECEDOR, AMBOS
+  email       String?
+  phone       String?
+  address     String?
+  city        String?
+  state       String?
+  active      Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  saleOrders     SaleOrder[]
+  purchaseOrders PurchaseOrder[]
+  financials     FinancialTransaction[]
+
+  @@map("partners")
+}
+
+model Item {
+  id             String    @id @default(uuid())
+  code           String    @unique
+  name           String
+  description    String?
+  type           String    // MATERIA_PRIMA, SEMIACABADO, PRODUTO_ACABADO, EMBALAGEM, CONSUMO
+  unit           String    // UN, KG, M, L, PC
+  costPrice      Float     @default(0)
+  salePrice      Float     @default(0)
+  minStock       Float     @default(0)
+  leadTimeDays   Int       @default(1)
+  ncm            String?
+  active         Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  bomParents     BOMItem[]          @relation("ItemBOMChildren")
+  boms           BOM[]              @relation("ProductBOM")
+  routings       Routing[]
+  stockLots      StockLot[]
+  stockMovements StockMovement[]
+  saleItems      SaleOrderItem[]
+  purchaseItems  PurchaseOrderItem[]
+  productionOrders ProductionOrder[]
+
+  @@map("items")
+}
+
+// ==========================================
+// 3. ENGENHARIA & BOM (ESTRUTURA DE PRODUTO)
+// ==========================================
+model BOM {
+  id          String    @id @default(uuid())
+  code        String    @unique
+  version     String    @default("1.0")
+  productId   String
+  product     Item      @relation("ProductBOM", fields: [productId], references: [id])
+  active      Boolean   @default(true)
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  items       BOMItem[]
+
+  @@map("boms")
+}
+
+model BOMItem {
+  id             String   @id @default(uuid())
+  bomId          String
+  bom            BOM      @relation(fields: [bomId], references: [id], onDelete: Cascade)
+  componentId    String
+  component      Item     @relation("ItemBOMChildren", fields: [componentId], references: [id])
+  quantity       Float    // Quantidade necessária por unidade
+  scrapRate      Float    @default(0) // % de perda técnica esperada
+  order          Int      @default(1)
+
+  @@map("bom_items")
+}
+
+model WorkCenter {
+  id             String   @id @default(uuid())
+  code           String   @unique
+  name           String
+  capacityPerHour Float   @default(1)
+  costPerHour    Float    @default(0)
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  routings       Routing[]
+  productionLogs ProductionLog[]
+
+  @@map("work_centers")
+}
+
+model Routing {
+  id             String     @id @default(uuid())
+  code           String     @unique
+  name           String
+  itemId         String
+  item           Item       @relation(fields: [itemId], references: [id])
+  workCenterId   String
+  workCenter     WorkCenter @relation(fields: [workCenterId], references: [id])
+  sequence       Int        @default(1)
+  setupMinutes   Int        @default(0)
+  runTimeMinutes Float      @default(0)
+  description    String?
+
+  @@map("routings")
+}
+
+// ==========================================
+// 4. VENDAS & ORÇAMENTOS
+// ==========================================
+model SaleOrder {
+  id             String          @id @default(uuid())
+  orderNumber    String          @unique
+  partnerId      String
+  partner        Partner         @relation(fields: [partnerId], references: [id])
+  status         String          @default("ORCAMENTO") // ORCAMENTO, APROVADO, EM_PRODUCAO, FATURADO, CANCELADO
+  totalAmount    Float           @default(0)
+  deliveryDate   DateTime?
+  notes          String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  items          SaleOrderItem[]
+  productionOrders ProductionOrder[]
+  financials     FinancialTransaction[]
+
+  @@map("sale_orders")
+}
+
+model SaleOrderItem {
+  id          String    @id @default(uuid())
+  saleOrderId String
+  saleOrder   SaleOrder @relation(fields: [saleOrderId], references: [id], onDelete: Cascade)
+  itemId      String
+  item        Item      @relation(fields: [itemId], references: [id])
+  quantity    Float
+  unitPrice   Float
+  totalPrice  Float
+
+  @@map("sale_order_items")
+}
+
+// ==========================================
+// 5. PCP & CHÃO DE FÁBRICA (ORDENS & APONTAMENTOS)
+// ==========================================
+model ProductionOrder {
+  id               String                @id @default(uuid())
+  code             String                @unique
+  productId        String
+  product          Item                  @relation(fields: [productId], references: [id])
+  saleOrderId      String?
+  saleOrder        SaleOrder?            @relation(fields: [saleOrderId], references: [id])
+  quantityPlanned  Float
+  quantityProduced Float                 @default(0)
+  quantityScrapped Float                 @default(0)
+  status           String                @default("PLANEJADA") // PLANEJADA, LIBERADA, EM_ANDAMENTO, CONCLUIDA, CANCELADA
+  startDate        DateTime?
+  endDate          DateTime?
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+
+  logs             ProductionLog[]
+  stockMovements   StockMovement[]
+
+  @@map("production_orders")
+}
+
+model ProductionLog {
+  id                String            @id @default(uuid())
+  productionOrderId String
+  productionOrder   ProductionOrder   @relation(fields: [productionOrderId], references: [id])
+  workCenterId      String
+  workCenter        WorkCenter        @relation(fields: [workCenterId], references: [id])
+  operatorId        String
+  operator          User              @relation(fields: [operatorId], references: [id])
+  type              String            @default("PRODUCAO") // PRODUCAO, PARADA, AJUSTE
+  startTime         DateTime
+  endTime           DateTime?
+  quantityGood      Float             @default(0)
+  quantityScrapped  Float             @default(0)
+  stopReason        String?
+  scrapReason       String?
+  notes             String?
+  createdAt         DateTime          @default(now())
+
+  @@map("production_logs")
+}
+
+// ==========================================
+// 6. SUPRIMENTOS, COMPRAS & ESTOQUE (FIFO/LOTES)
+// ==========================================
+model StockLot {
+  id           String    @id @default(uuid())
+  lotNumber    String
+  itemId       String
+  item         Item      @relation(fields: [itemId], references: [id])
+  quantity     Float     @default(0)
+  expirationAt DateTime?
+  createdAt    DateTime  @default(now())
+
+  stockMovements StockMovement[]
+
+  @@unique([lotNumber, itemId])
+  @@map("stock_lots")
+}
+
+model StockMovement {
+  id                String            @id @default(uuid())
+  itemId            String
+  item              Item              @relation(fields: [itemId], references: [id])
+  stockLotId        String?
+  stockLot          StockLot?         @relation(fields: [stockLotId], references: [id])
+  productionOrderId String?
+  productionOrder   ProductionOrder?  @relation(fields: [productionOrderId], references: [id])
+  type              String            // ENTRADA_COMPRA, SAIDA_PRODUCAO, ENTRADA_PRODUCAO, SAIDA_VENDA, AJUSTE_INVENTARIO
+  quantity          Float
+  unitCost          Float             @default(0)
+  documentRef       String?           // NF-e ou número da OP
+  createdAt         DateTime          @default(now())
+
+  @@map("stock_movements")
+}
+
+model PurchaseOrder {
+  id          String              @id @default(uuid())
+  orderNumber String              @unique
+  partnerId   String
+  partner     Partner             @relation(fields: [partnerId], references: [id])
+  status      String              @default("COTACAO") // COTACAO, APROVADO, RECEBIDO, CANCELADO
+  totalAmount Float               @default(0)
+  deliveryDate DateTime?
+  notes       String?
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  items       PurchaseOrderItem[]
+  financials  FinancialTransaction[]
+
+  @@map("purchase_orders")
+}
+
+model PurchaseOrderItem {
+  id              String        @id @default(uuid())
+  purchaseOrderId String
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  itemId          String
+  item            Item          @relation(fields: [itemId], references: [id])
+  quantity        Float
+  unitPrice       Float
+  totalPrice      Float
+
+  @@map("purchase_order_items")
+}
+
+// ==========================================
+// 7. FINANCEIRO INTEGRADO & DRE GERENCIAL
+// ==========================================
+model FinancialTransaction {
+  id              String          @id @default(uuid())
+  code            String          @unique
+  description     String
+  type            String          // PAGAR, RECEBER
+  status          String          @default("PENDENTE") // PENDENTE, PAGO, ATRASADO, CANCELADO
+  dreCategory     String          // RECEITA_BRUTA, DEDUCAO_RECEITA, CUSTO_PRODUCAO_CPV, DESPESA_OPERACIONAL, etc.
+  amount          Float
+  paidAmount      Float           @default(0)
+  dueDate         DateTime
+  paymentDate     DateTime?
+  partnerId       String?
+  partner         Partner?        @relation(fields: [partnerId], references: [id])
+  saleOrderId     String?
+  saleOrder       SaleOrder?      @relation(fields: [saleOrderId], references: [id])
+  purchaseOrderId String?
+  purchaseOrder   PurchaseOrder?  @relation(fields: [purchaseOrderId], references: [id])
+  documentRef     String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@map("financial_transactions")
+}
