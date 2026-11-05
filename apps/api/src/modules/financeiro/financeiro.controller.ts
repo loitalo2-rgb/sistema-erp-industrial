@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Patch, Body, Param, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { FinanceiroService } from './financeiro.service';
 import { JwtAuthGuard } from '../auth/guards';
 import { FinancialType, FinancialStatus } from '../../common/enums';
@@ -16,6 +25,11 @@ export class FinanceiroController {
     return this.financeiroService.getTransactions(type, status);
   }
 
+  @Get('titulos/:id')
+  getTransactionById(@Param('id') id: string) {
+    return this.financeiroService.getTransactionById(id);
+  }
+
   @Post('titulos')
   createTransaction(@Body() body: any) {
     return this.financeiroService.createTransaction(body);
@@ -25,12 +39,23 @@ export class FinanceiroController {
   payTransaction(
     @Param('id') id: string,
     @Body('paidAmount') paidAmount?: number,
+    @Body('paymentDate') paymentDate?: string,
   ) {
-    return this.financeiroService.payTransaction(id, paidAmount);
+    return this.financeiroService.payTransaction(id, paidAmount, paymentDate);
+  }
+
+  @Patch('titulos/:id/cancelar')
+  cancelTransaction(@Param('id') id: string) {
+    return this.financeiroService.cancelTransaction(id);
+  }
+
+  @Get('resumo')
+  getSummary() {
+    return this.financeiroService.getSummary();
   }
 
   @Get('dre')
-  getDRE() {
-    return this.financeiroService.getDRE();
+  getDRE(@Query('from') from?: string, @Query('to') to?: string) {
+    return this.financeiroService.getDRE(from, to);
   }
 }

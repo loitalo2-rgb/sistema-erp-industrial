@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { VendasService } from './vendas.service';
 import { JwtAuthGuard } from '../auth/guards';
 import { SaleOrderStatus } from '../../common/enums';
@@ -13,8 +22,23 @@ export class VendasController {
     return this.vendasService.getOrders(status);
   }
 
+  @Get('pedidos/:id')
+  getOrderById(@Param('id') id: string) {
+    return this.vendasService.getOrderById(id);
+  }
+
   @Post('pedidos')
   createOrder(@Body() body: any) {
     return this.vendasService.createOrder(body);
+  }
+
+  @Post('pedidos/:id/faturar')
+  faturarOrder(@Param('id') id: string) {
+    return this.vendasService.faturarOrder(id);
+  }
+
+  @Patch('pedidos/:id/status')
+  updateStatus(@Param('id') id: string, @Body('status') status: SaleOrderStatus) {
+    return this.vendasService.updateStatus(id, status);
   }
 }

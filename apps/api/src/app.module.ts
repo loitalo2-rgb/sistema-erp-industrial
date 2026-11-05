@@ -8,6 +8,9 @@ import { ProducaoModule } from './modules/producao/producao.module';
 import { EstoqueModule } from './modules/estoque/estoque.module';
 import { VendasModule } from './modules/vendas/vendas.module';
 import { FinanceiroModule } from './modules/financeiro/financeiro.module';
+import { ComprasModule } from './modules/compras/compras.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { RelatoriosModule } from './modules/relatorios/relatorios.module';
 
 @Module({
   imports: [
@@ -19,7 +22,10 @@ import { FinanceiroModule } from './modules/financeiro/financeiro.module';
     ProducaoModule,
     EstoqueModule,
     VendasModule,
+    ComprasModule,
     FinanceiroModule,
+    DashboardModule,
+    RelatoriosModule,
   ],
 })
 export class AppModule {}

@@ -12,6 +12,11 @@ export class EstoqueController {
     return this.estoqueService.getBalances();
   }
 
+  @Get('saldos/criticos')
+  getLowStock() {
+    return this.estoqueService.getLowStock();
+  }
+
   @Get('movimentacoes')
   getMovements(@Query('itemId') itemId?: string) {
     return this.estoqueService.getMovements(itemId);
@@ -25,5 +30,10 @@ export class EstoqueController {
   @Get('lotes')
   getLots(@Query('itemId') itemId?: string) {
     return this.estoqueService.getLots(itemId);
+  }
+
+  @Post('lotes')
+  createLot(@Body() body: any) {
+    return this.estoqueService.createLot(body);
   }
 }

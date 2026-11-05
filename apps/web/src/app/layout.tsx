@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { Sidebar } from '../components/Sidebar';
+import { AppShell } from '../components/AppShell';
 
 export const metadata: Metadata = {
   title: 'ERP Industrial & MRP I',
-  description: 'Sistema Integrado de Gestão de Manufatura e Produtividade',
+  description:
+    'Sistema Integrado de Gestão de Manufatura, Estoque, Compras, Vendas e DRE',
 };
 
 export default function RootLayout({
@@ -14,11 +15,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body className="bg-slate-50 antialiased flex">
-        <Sidebar />
-        <div className="flex-1 ml-64 min-h-screen flex flex-col">
-          {children}
-        </div>
+      <body className="bg-slate-50 antialiased">
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );

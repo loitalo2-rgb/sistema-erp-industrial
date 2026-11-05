@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { api } from '../../lib/api';
 import { Factory, Lock, Mail, ArrowRight, AlertCircle } from 'lucide-react';
 
 export default function LoginPage() {
@@ -11,24 +12,19 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    if (localStorage.getItem('erp_token')) {
+      router.replace('/');
+    }
+  }, [router]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
     try {
-      const res = await fetch('http://localhost:3001/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.message || 'Falha ao autenticar.');
-      }
-
-      const data = await res.json();
+      const data = await api.post('/auth/login', { email, password });
       localStorage.setItem('erp_token', data.accessToken);
       localStorage.setItem('erp_user', JSON.stringify(data.user));
       router.push('/');
@@ -48,11 +44,15 @@ export default function LoginPage() {
           </div>
           <div>
             <h1 className="text-xl font-bold text-white">ERP Industrial</h1>
-            <p className="text-xs text-slate-400">MRP I & Gestão de Manufatura</p>
+            <p className="text-xs text-slate-400">
+              MRP I, Produção & Contabilidade
+            </p>
           </div>
         </div>
 
-        <h2 className="text-lg font-bold text-slate-200 text-center mb-6">Acesso ao Sistema</h2>
+        <h2 className="text-lg font-bold text-slate-200 text-center mb-6">
+          Acesso ao Sistema
+        </h2>
 
         {error && (
           <div className="mb-4 p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg text-rose-400 text-xs flex items-center gap-2">
@@ -63,7 +63,9 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">E-mail Corporativo</label>
+            <label className="block text-xs font-medium text-slate-300 mb-1">
+              E-mail Corporativo
+            </label>
             <div className="relative">
               <Mail className="w-4 h-4 text-slate-500 absolute left-3 top-3" />
               <input
@@ -77,7 +79,9 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">Senha de Acesso</label>
+            <label className="block text-xs font-medium text-slate-300 mb-1">
+              Senha de Acesso
+            </label>
             <div className="relative">
               <Lock className="w-4 h-4 text-slate-500 absolute left-3 top-3" />
               <input
@@ -101,9 +105,15 @@ export default function LoginPage() {
         </form>
 
         <div className="mt-6 p-3 bg-slate-800/50 rounded-lg border border-slate-800 text-xs text-slate-400">
-          <p className="font-semibold text-slate-300 mb-1">Credenciais de Acesso Inicial:</p>
-          <p>E-mail: <code className="text-industrial-400">admin@erp.local</code></p>
-          <p>Senha: <code className="text-industrial-400">admin123</code></p>
+          <p className="font-semibold text-slate-300 mb-1">
+            Credenciais de Acesso Inicial:
+          </p>
+          <p>
+            E-mail: <code className="text-industrial-400">admin@erp.local</code>
+          </p>
+          <p>
+            Senha: <code className="text-industrial-400">admin123</code>
+          </p>
         </div>
       </div>
     </div>
