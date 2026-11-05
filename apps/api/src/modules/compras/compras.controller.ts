@@ -9,8 +9,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ComprasService } from './compras.service';
-import { JwtAuthGuard } from '../auth/guards';
-import { PurchaseOrderStatus } from '../../common/enums';
+import { JwtAuthGuard, Roles } from '../auth/guards';
+import { PurchaseOrderStatus, UserRole } from '../../common/enums';
 
 @UseGuards(JwtAuthGuard)
 @Controller('compras')
@@ -27,16 +27,19 @@ export class ComprasController {
     return this.comprasService.getOrderById(id);
   }
 
+  @Roles(UserRole.ADMIN, UserRole.COMPRAS)
   @Post('pedidos')
   createOrder(@Body() body: any) {
     return this.comprasService.createOrder(body);
   }
 
+  @Roles(UserRole.ADMIN, UserRole.COMPRAS)
   @Post('pedidos/:id/receber')
   receiveOrder(@Param('id') id: string) {
     return this.comprasService.receiveOrder(id);
   }
 
+  @Roles(UserRole.ADMIN, UserRole.COMPRAS)
   @Patch('pedidos/:id/status')
   updateStatus(
     @Param('id') id: string,

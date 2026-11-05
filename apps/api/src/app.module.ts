@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CadastrosModule } from './modules/cadastros/cadastros.module';
@@ -11,6 +12,10 @@ import { FinanceiroModule } from './modules/financeiro/financeiro.module';
 import { ComprasModule } from './modules/compras/compras.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { RelatoriosModule } from './modules/relatorios/relatorios.module';
+import { UsuariosModule } from './modules/usuarios/usuarios.module';
+import { AuditoriaModule } from './modules/auditoria/auditoria.module';
+import { JwtAuthGuard, RolesGuard } from './modules/auth/guards';
+import { AuditInterceptor } from './common/audit.interceptor';
 
 @Module({
   imports: [
@@ -26,6 +31,15 @@ import { RelatoriosModule } from './modules/relatorios/relatorios.module';
     FinanceiroModule,
     DashboardModule,
     RelatoriosModule,
+    UsuariosModule,
+    AuditoriaModule,
+  ],
+  providers: [
+    // Autenticação JWT e RBAC aplicados globalmente.
+    { provide: APP_GUARD, useClass: JwtAuthGuard },
+    { provide: APP_GUARD, useClass: RolesGuard },
+    // Registra automaticamente toda operação de escrita na auditoria.
+    { provide: APP_INTERCEPTOR, useClass: AuditInterceptor },
   ],
 })
 export class AppModule {}

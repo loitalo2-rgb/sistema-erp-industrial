@@ -9,8 +9,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { FinanceiroService } from './financeiro.service';
-import { JwtAuthGuard } from '../auth/guards';
-import { FinancialType, FinancialStatus } from '../../common/enums';
+import { JwtAuthGuard, Roles } from '../auth/guards';
+import { FinancialType, FinancialStatus, UserRole } from '../../common/enums';
 
 @UseGuards(JwtAuthGuard)
 @Controller('financeiro')
@@ -30,11 +30,13 @@ export class FinanceiroController {
     return this.financeiroService.getTransactionById(id);
   }
 
+  @Roles(UserRole.ADMIN, UserRole.FINANCEIRO)
   @Post('titulos')
   createTransaction(@Body() body: any) {
     return this.financeiroService.createTransaction(body);
   }
 
+  @Roles(UserRole.ADMIN, UserRole.FINANCEIRO)
   @Patch('titulos/:id/pagar')
   payTransaction(
     @Param('id') id: string,
@@ -44,6 +46,7 @@ export class FinanceiroController {
     return this.financeiroService.payTransaction(id, paidAmount, paymentDate);
   }
 
+  @Roles(UserRole.ADMIN, UserRole.FINANCEIRO)
   @Patch('titulos/:id/cancelar')
   cancelTransaction(@Param('id') id: string) {
     return this.financeiroService.cancelTransaction(id);

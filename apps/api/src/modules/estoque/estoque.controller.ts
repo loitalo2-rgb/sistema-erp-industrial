@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Query, UseGuards } from '@nestjs/common';
 import { EstoqueService } from './estoque.service';
-import { JwtAuthGuard } from '../auth/guards';
+import { JwtAuthGuard, Roles } from '../auth/guards';
+import { UserRole } from '../../common/enums';
 
 @UseGuards(JwtAuthGuard)
 @Controller('estoque')
@@ -22,6 +23,7 @@ export class EstoqueController {
     return this.estoqueService.getMovements(itemId);
   }
 
+  @Roles(UserRole.ADMIN, UserRole.COMPRAS, UserRole.PCP, UserRole.OPERADOR)
   @Post('movimentacoes')
   createMovement(@Body() body: any) {
     return this.estoqueService.createMovement(body);
@@ -32,6 +34,7 @@ export class EstoqueController {
     return this.estoqueService.getLots(itemId);
   }
 
+  @Roles(UserRole.ADMIN, UserRole.COMPRAS, UserRole.PCP, UserRole.OPERADOR)
   @Post('lotes')
   createLot(@Body() body: any) {
     return this.estoqueService.createLot(body);

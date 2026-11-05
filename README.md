@@ -3,7 +3,8 @@
 Sistema Integrado de Gestão Industrial desenvolvido para controle de ponta a ponta: da Engenharia de Produto ao Faturamento e DRE Gerencial.
 
 > **Etapa 3 concluída:** integração real de todas as telas, módulos de **Compras** e **Relatórios**, e correções de cache HTTP e de filtro de datas.
-> Detalhes em [`RELATORIO-ETAPA-3.md`](./RELATORIO-ETAPA-3.md).
+> **Etapa 4 concluída:** **RBAC** por perfil, gestão de **Usuários**, **Auditoria** automática de operações e **smoke test** automatizado.
+> Detalhes em [`RELATORIO-ETAPA-3.md`](./RELATORIO-ETAPA-3.md) e [`RELATORIO-ETAPA-4.md`](./RELATORIO-ETAPA-4.md).
 
 ---
 
@@ -19,9 +20,12 @@ Sistema Integrado de Gestão Industrial desenvolvido para controle de ponta a po
   * Módulo de Compras com recebimento e custo médio
   * Financeiro e DRE Gerencial integrado
   * Relatórios consolidados com exportação CSV
+  * Gestão de usuários e governança de acessos (RBAC)
+  * Trilha de auditoria de todas as operações de escrita
 * **Backend (`apps/api`)**: Node.js + NestJS (TypeScript)
   * Arquitetura modular corporativa
-  * Autenticação JWT com controle de perfis de acesso (RBAC)
+  * Autenticação JWT com controle de perfis de acesso (RBAC) aplicado globalmente
+  * Auditoria automática de criação, alteração, baixa e cancelamento
   * Motor de cálculo MRP I (explosão de necessidades de materiais)
   * Baixa automática de estoque e movimentações rastreadas (FIFO)
   * DRE dinâmico e relatórios por período
@@ -44,7 +48,8 @@ sistema erp italo contabilidade/
 │   │       ├── common/
 │   │       │   ├── inventory.ts       # Efeito de estoque por tipo de movimentação
 │   │       │   ├── stock.helpers.ts   # Consumo/entrada FIFO e saldo por item
-│   │       │   └── dates.ts           # Filtro de datas por dia local
+│   │       │   ├── dates.ts           # Filtro de datas por dia local
+│   │       │   └── audit.interceptor.ts # Registro automático de auditoria
 │   │       ├── modules/
 │   │       │   ├── auth/              # JWT e permissões RBAC
 │   │       │   ├── cadastros/         # Itens, Clientes e Fornecedores
@@ -56,7 +61,9 @@ sistema erp italo contabilidade/
 │   │       │   ├── compras/           # Cotações, pedidos e recebimento
 │   │       │   ├── financeiro/        # Contas a pagar/receber e DRE
 │   │       │   ├── dashboard/         # KPIs executivos
-│   │       │   └── relatorios/        # Relatórios consolidados
+│   │       │   ├── relatorios/        # Relatórios consolidados
+│   │       │   ├── usuarios/          # Gestão de usuários e perfis
+│   │       │   └── auditoria/         # Trilha de auditoria
 │   │       ├── prisma/               # Serviço de conexão Prisma
 │   │       ├── app.module.ts
 │   │       └── main.ts
@@ -73,13 +80,16 @@ sistema erp italo contabilidade/
 │           │   ├── comercial/        # Pedidos de venda
 │           │   ├── compras/          # Pedidos de compra
 │           │   ├── financeiro/       # DRE e financeiro
-│           │   └── relatorios/       # Relatórios consolidados
+│           │   ├── relatorios/       # Relatórios consolidados
+│           │   ├── usuarios/         # Usuários e perfis (admin)
+│           │   └── auditoria/        # Auditoria (admin)
 │           ├── components/           # AppShell, Sidebar, Header e UI
 │           └── lib/                  # Cliente HTTP e formatação
 │
 ├── package.json                      # Monorepo workspaces
 ├── .env.example                      # Variáveis de ambiente
-├── RELATORIO-ETAPA-3.md              # Relatório da etapa atual
+├── RELATORIO-ETAPA-3.md              # Relatório da Etapa 3
+├── RELATORIO-ETAPA-4.md              # Relatório da Etapa 4
 └── Plano de Arquitetura e Módulos ERP Industrial.pdf
 ```
 
@@ -134,6 +144,21 @@ npm --workspace=apps/web run start
 * **E-mail**: `admin@erp.local`
 * **Senha**: `admin123`
 
+### Usuários de demonstração (RBAC)
+
+| Perfil | E-mail | Senha |
+| --- | --- | --- |
+| Administrador | `admin@erp.local` | `admin123` |
+| Engenharia | `engenharia@erp.local` | `engenharia123` |
+| PCP | `pcp@erp.local` | `pcp123` |
+| Operador | `operador@erp.local` | `operador123` |
+| Compras | `compras@erp.local` | `compras123` |
+| Vendas | `vendas@erp.local` | `vendas123` |
+| Financeiro | `financeiro@erp.local` | `financeiro123` |
+
+> Apenas o perfil **ADMIN** acessa as telas de Usuários e Auditoria e pode cadastrar novos usuários.
+> As demais permissões são aplicadas no backend por módulo (ex.: Vendas só cria/fatura pedidos de venda).
+
 ---
 
 ## 🔌 Principais Endpoints
@@ -151,6 +176,9 @@ npm --workspace=apps/web run start
 | Financeiro | `GET/POST /financeiro/titulos`, `PATCH /financeiro/titulos/:id/pagar`, `PATCH /financeiro/titulos/:id/cancelar`, `GET /financeiro/resumo`, `GET /financeiro/dre` |
 | Dashboard | `GET /dashboard/resumo` |
 | Relatórios | `GET /relatorios/consolidado`, `/relatorios/dre`, `/relatorios/estoque`, `/relatorios/producao`, `/relatorios/vendas`, `/relatorios/financeiro` |
+| Usuários | `GET/POST /usuarios`, `GET /usuarios/perfis`, `PATCH /usuarios/:id` (somente ADMIN) |
+| Auditoria | `GET /auditoria`, `GET /auditoria/filtros` (somente ADMIN) |
+| Autenticação extra | `PATCH /auth/senha` (troca de senha do próprio usuário) |
 
 ---
 
@@ -175,8 +203,19 @@ Também é possível simular o fluxo completo pela interface:
 
 ---
 
-## 📄 Documentação
+## ✅ Testes
 
-- [`RELATORIO-ETAPA-3.md`](./RELATORIO-ETAPA-3.md) — relatório técnico da etapa atual, evidências de teste e pendências.
+Com a API em execução e o seed aplicado:
+
+```bash
+npm run test:smoke
+```
+
+O script valida login, rotas protegidas, dashboard, relatórios, RBAC (403 para perfil sem permissão), auditoria e bloqueio de cadastro anônimo. Sai com código de erro se qualquer verificação falhar.
+
+---
+
+- [`RELATORIO-ETAPA-3.md`](./RELATORIO-ETAPA-3.md) — integração total, Compras e Relatórios.
+- [`RELATORIO-ETAPA-4.md`](./RELATORIO-ETAPA-4.md) — RBAC, Usuários, Auditoria e testes automatizados.
 - `Plano de Arquitetura e Módulos ERP Industrial.pdf` — visão de arquitetura.
 - `Manual de Operação e Documentação Técnica - ERP Industrial.pdf` — manual de operação.

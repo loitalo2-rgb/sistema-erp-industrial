@@ -17,10 +17,12 @@ model User {
   password  String
   role      String   @default("OPERADOR") // ADMIN, ENGENHARIA, PCP, OPERADOR, COMPRAS, VENDAS, FINANCEIRO
   active    Boolean  @default(true)
+  lastLoginAt DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   productionLogs ProductionLog[]
+  auditLogs      AuditLog[]
 
   @@map("users")
 }
@@ -315,4 +317,28 @@ model FinancialTransaction {
   updatedAt       DateTime        @updatedAt
 
   @@map("financial_transactions")
+}
+
+// ==========================================
+// 8. AUDITORIA E GOVERNANÇA
+// ==========================================
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
+  userEmail  String?
+  action     String // CRIAR, ATUALIZAR, DESATIVAR, FATURAR, RECEBER, PAGAR, CANCELAR, LOGIN...
+  entity     String // modulo/entidade afetada
+  entityId   String?
+  method     String
+  path       String
+  statusCode Int?
+  payload    String?
+  ip         String?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([entity])
+  @@index([userId])
+  @@map("audit_logs")
 }

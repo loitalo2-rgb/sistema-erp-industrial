@@ -17,7 +17,8 @@
     "db:generate": "npm --workspace=apps/api run prisma:generate",
     "db:migrate": "npm --workspace=apps/api run prisma:migrate",
     "db:studio": "npm --workspace=apps/api run prisma:studio",
-    "db:seed": "npm --workspace=apps/api run prisma:seed"
+    "db:seed": "npm --workspace=apps/api run prisma:seed",
+    "test:smoke": "node apps/api/scripts/smoke-test.mjs"
   },
   "keywords": [
     "erp",

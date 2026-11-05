@@ -60,6 +60,31 @@ async function main() {
   });
   console.log(`Usuário Admin configurado: ${admin.email}`);
 
+  // 1.1 Usuários de demonstração para cada perfil (RBAC)
+  const demoUsers: Array<{ name: string; email: string; password: string; role: UserRole }> = [
+    { name: 'Engenharia de Produto', email: 'engenharia@erp.local', password: 'engenharia123', role: UserRole.ENGENHARIA },
+    { name: 'Planejamento e Controle', email: 'pcp@erp.local', password: 'pcp123', role: UserRole.PCP },
+    { name: 'Operador de Produção', email: 'operador@erp.local', password: 'operador123', role: UserRole.OPERADOR },
+    { name: 'Analista de Compras', email: 'compras@erp.local', password: 'compras123', role: UserRole.COMPRAS },
+    { name: 'Analista de Vendas', email: 'vendas@erp.local', password: 'vendas123', role: UserRole.VENDAS },
+    { name: 'Analista Financeiro', email: 'financeiro@erp.local', password: 'financeiro123', role: UserRole.FINANCEIRO },
+  ];
+
+  for (const demo of demoUsers) {
+    const password = await bcrypt.hash(demo.password, 10);
+    await prisma.user.upsert({
+      where: { email: demo.email },
+      update: {},
+      create: {
+        name: demo.name,
+        email: demo.email,
+        password,
+        role: demo.role,
+      },
+    });
+    console.log(`Usuário ${demo.role} configurado: ${demo.email}`);
+  }
+
   // 2. Criar Parceiros
   const cliente = await prisma.partner.upsert({
     where: { code: 'CLI-001' },

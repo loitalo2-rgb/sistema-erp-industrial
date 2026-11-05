@@ -14,10 +14,19 @@ import {
   Gauge,
   HardHat,
   BarChart3,
+  Users,
+  ShieldCheck,
   LogOut,
 } from 'lucide-react';
 
-const menuItems = [
+type MenuItem = {
+  name: string;
+  href: string;
+  icon: any;
+  adminOnly?: boolean;
+};
+
+const operationsItems: MenuItem[] = [
   { name: 'Painel Geral', href: '/', icon: Gauge },
   { name: 'Cadastros Base', href: '/cadastros', icon: Boxes },
   { name: 'Engenharia (BOM)', href: '/engenharia', icon: Layers },
@@ -30,12 +39,29 @@ const menuItems = [
   { name: 'Relatórios', href: '/relatorios', icon: BarChart3 },
 ];
 
+const adminItems: MenuItem[] = [
+  { name: 'Usuários & Perfis', href: '/usuarios', icon: Users, adminOnly: true },
+  { name: 'Auditoria', href: '/auditoria', icon: ShieldCheck, adminOnly: true },
+];
+
+const ROLE_LABELS: Record<string, string> = {
+  ADMIN: 'Administrador',
+  ENGENHARIA: 'Engenharia',
+  PCP: 'PCP',
+  OPERADOR: 'Operador',
+  COMPRAS: 'Compras',
+  VENDAS: 'Vendas',
+  FINANCEIRO: 'Financeiro',
+};
+
 export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const [user, setUser] = useState<{ name?: string; email?: string; role?: string }>(
-    {},
-  );
+  const [user, setUser] = useState<{
+    name?: string;
+    email?: string;
+    role?: string;
+  }>({});
 
   useEffect(() => {
     try {
@@ -60,6 +86,27 @@ export function Sidebar() {
     .join('')
     .toUpperCase();
 
+  const isAdmin = user.role === 'ADMIN';
+
+  const renderItem = (item: MenuItem) => {
+    const Icon = item.icon;
+    const isActive = pathname === item.href;
+    return (
+      <Link
+        key={item.href}
+        href={item.href}
+        className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+          isActive
+            ? 'bg-industrial-600 text-white'
+            : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+        }`}
+      >
+        <Icon className="w-4 h-4" />
+        <span>{item.name}</span>
+      </Link>
+    );
+  };
+
   return (
     <aside className="w-64 bg-slate-900 text-slate-100 flex flex-col h-screen fixed left-0 top-0 border-r border-slate-800 z-20">
       <div className="p-5 flex items-center gap-3 border-b border-slate-800">
@@ -73,24 +120,19 @@ export function Sidebar() {
       </div>
 
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-        {menuItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = pathname === item.href;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                isActive
-                  ? 'bg-industrial-600 text-white'
-                  : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-              }`}
-            >
-              <Icon className="w-4 h-4" />
-              <span>{item.name}</span>
-            </Link>
-          );
-        })}
+        <p className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+          Operação
+        </p>
+        {operationsItems.map(renderItem)}
+
+        {isAdmin && (
+          <>
+            <p className="px-3 pt-4 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+              Administração
+            </p>
+            {adminItems.map(renderItem)}
+          </>
+        )}
       </nav>
 
       <div className="p-4 border-t border-slate-800 bg-slate-950/40">
@@ -103,7 +145,7 @@ export function Sidebar() {
               {user.name || 'Administrador'}
             </p>
             <p className="text-slate-500 truncate">
-              {user.email || 'admin@erp.local'}
+              {ROLE_LABELS[user.role || ''] || user.role || 'Administrador'}
             </p>
           </div>
           <button
