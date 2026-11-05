@@ -14,7 +14,7 @@ export function Header({ title }: { title: string }) {
     <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-10 print:hidden">
       <div>
         <h2 className="text-xl font-bold text-slate-800">{title}</h2>
-        <p className="text-[11px] text-slate-500 capitalize">{today}</p>
+        <p className="text-[11px] text-slate-600 capitalize">{today}</p>
       </div>
 
       <div className="flex items-center gap-4">
@@ -23,7 +23,11 @@ export function Header({ title }: { title: string }) {
           <span>Sistema operando</span>
         </div>
 
-        <button className="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-colors relative">
+        <button
+          aria-label="Notificações"
+          data-testid="btn-notificacoes"
+          className="p-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-full transition-colors relative"
+        >
           <Bell className="w-5 h-5" />
           <span className="w-2 h-2 bg-rose-500 rounded-full absolute top-1.5 right-1.5" />
         </button>

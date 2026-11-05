@@ -43,6 +43,31 @@ async function get(path, token) {
   return { res, data };
 }
 
+async function getWithCookie(path, cookie) {
+  const res = await fetch(`${API}${path}`, { headers: { Cookie: cookie } });
+  let data = null;
+  try {
+    data = await res.json();
+  } catch {
+    data = null;
+  }
+  return { res, data };
+}
+
+async function postWithCookie(path, cookie) {
+  const res = await fetch(`${API}${path}`, {
+    method: 'POST',
+    headers: { Cookie: cookie },
+  });
+  let data = null;
+  try {
+    data = await res.json();
+  } catch {
+    data = null;
+  }
+  return { res, data };
+}
+
 async function post(path, token, body) {
   const res = await fetch(`${API}${path}`, {
     method: 'POST',
@@ -70,6 +95,11 @@ async function main() {
   check('login admin retorna token', Boolean(admin.data?.accessToken));
   check('login admin retorna perfil ADMIN', admin.data?.user?.role === 'ADMIN');
 
+  const setCookie = admin.res.headers.get('set-cookie') || '';
+  check('cookie de sessão é HttpOnly', /HttpOnly/i.test(setCookie), setCookie);
+  check('cookie de sessão usa SameSite=Lax', /SameSite=Lax/i.test(setCookie), setCookie);
+  check('cookie de sessão usa Secure', /Secure/i.test(setCookie), setCookie);
+
   const operator = await login('operador@erp.local', 'operador123');
   check('login operador retorna token', Boolean(operator.data?.accessToken));
   check('login operador retorna perfil OPERADOR', operator.data?.user?.role === 'OPERADOR');
@@ -79,6 +109,17 @@ async function main() {
 
   const adminToken = admin.data.accessToken;
   const operatorToken = operator.data.accessToken;
+  const sessionCookie = setCookie.split(';')[0];
+
+  // 1.1 Sessão por cookie HttpOnly
+  const meWithCookie = await getWithCookie('/auth/me', sessionCookie);
+  check('cookie de sessão autentica /auth/me', meWithCookie.res.status === 200, `status ${meWithCookie.res.status}`);
+  check('/auth/me via cookie retorna ADMIN', meWithCookie.data?.role === 'ADMIN');
+
+  const logout = await postWithCookie('/auth/logout', sessionCookie);
+  const clearCookie = logout.res.headers.get('set-cookie') || '';
+  check('logout responde 201', logout.res.status === 201, `status ${logout.res.status}`);
+  check('logout expira o cookie de sessão', /erp_token=;/.test(clearCookie) && /Expires=Thu, 01 Jan 1970/i.test(clearCookie), clearCookie);
 
   // 2. Rotas protegidas
   const anonymous = await get('/dashboard/resumo', '');

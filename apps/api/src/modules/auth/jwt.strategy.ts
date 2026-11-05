@@ -2,12 +2,30 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PrismaService } from '../../prisma/prisma.service';
+import { AUTH_COOKIE } from './auth.constants';
+
+/** Lê o JWT do cookie HttpOnly, mantendo compatibilidade com Bearer token. */
+function cookieExtractor(req: any): string | null {
+  const cookieHeader: string | undefined = req?.headers?.cookie;
+  if (!cookieHeader) return null;
+
+  for (const part of cookieHeader.split(';')) {
+    const [rawName, ...rawValue] = part.trim().split('=');
+    if (rawName === AUTH_COOKIE) {
+      return decodeURIComponent(rawValue.join('='));
+    }
+  }
+  return null;
+}
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly prisma: PrismaService) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        cookieExtractor,
+        ExtractJwt.fromAuthHeaderAsBearerToken(),
+      ]),
       ignoreExpiration: false,
       secretOrKey: process.env.JWT_SECRET || 'segredo_super_seguro_erp_industrial_token_jwt_2026',
     });

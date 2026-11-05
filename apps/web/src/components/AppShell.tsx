@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { Sidebar } from './Sidebar';
+import { api, storeSessionUser } from '../lib/api';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -17,19 +18,30 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    const token = localStorage.getItem('erp_token');
-    if (!token) {
-      router.replace('/login');
-      return;
-    }
-    setReady(true);
+    // Valida a sessão no servidor: o token está em cookie HttpOnly.
+    let active = true;
+    api
+      .get('/auth/me')
+      .then((user) => {
+        if (!active) return;
+        storeSessionUser(user);
+        setReady(true);
+      })
+      .catch(() => {
+        if (!active) return;
+        router.replace('/login');
+      });
+
+    return () => {
+      active = false;
+    };
   }, [isLogin, pathname, router]);
 
   if (isLogin) return <>{children}</>;
 
   if (!ready) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-slate-50 text-slate-500 text-sm gap-2">
+      <div className="min-h-screen w-full flex items-center justify-center bg-slate-50 text-slate-600 text-sm gap-2">
         <Loader2 className="w-5 h-5 animate-spin" />
         Validando acesso...
       </div>

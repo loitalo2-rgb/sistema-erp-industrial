@@ -212,10 +212,13 @@ export default function CadastrosPage() {
             <div className="relative">
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
               <input
+                id="cadastros-busca"
+                data-testid="input-cadastros-busca"
+                name="search"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Buscar código ou nome..."
-                className="bg-white border border-slate-300 rounded-lg pl-9 pr-3 py-2 text-sm w-64"
+                className="bg-white border border-slate-400 rounded-lg pl-9 pr-3 py-2 text-sm w-64"
               />
             </div>
             <button
@@ -245,13 +248,20 @@ export default function CadastrosPage() {
                   <Plus className="w-4 h-4 text-industrial-600" /> Novo Item /
                   Insumo
                 </h4>
-                <form onSubmit={handleCreateItem} className="space-y-3">
+                <form
+                  onSubmit={handleCreateItem}
+                  data-testid="form-item"
+                  className="space-y-3"
+                >
                   <div className="grid grid-cols-2 gap-2">
                     <div>
                       <label className="block text-xs font-semibold text-slate-600 mb-1">
                         Código
                       </label>
                       <input
+                        id="item-codigo"
+                        data-testid="input-item-codigo"
+                        name="code"
                         type="text"
                         placeholder="MP-ACO-02"
                         value={itemCode}
@@ -358,6 +368,7 @@ export default function CadastrosPage() {
                   </div>
                   <button
                     type="submit"
+                    data-testid="btn-salvar-item"
                     disabled={saving}
                     className="w-full bg-industrial-600 hover:bg-industrial-700 disabled:opacity-50 text-white font-semibold py-2 rounded-lg text-sm mt-2"
                   >
@@ -445,13 +456,20 @@ export default function CadastrosPage() {
                   <Plus className="w-4 h-4 text-industrial-600" /> Novo Parceiro
                   Comercial
                 </h4>
-                <form onSubmit={handleCreatePartner} className="space-y-3">
+                <form
+                  onSubmit={handleCreatePartner}
+                  data-testid="form-parceiro"
+                  className="space-y-3"
+                >
                   <div className="grid grid-cols-2 gap-2">
                     <div>
                       <label className="block text-xs font-semibold text-slate-600 mb-1">
                         Código
                       </label>
                       <input
+                        id="parceiro-codigo"
+                        data-testid="input-parceiro-codigo"
+                        name="code"
                         type="text"
                         placeholder="CLI-002"
                         value={partnerCode}
@@ -547,6 +565,7 @@ export default function CadastrosPage() {
                   </div>
                   <button
                     type="submit"
+                    data-testid="btn-salvar-parceiro"
                     disabled={saving}
                     className="w-full bg-industrial-600 hover:bg-industrial-700 disabled:opacity-50 text-white font-semibold py-2 rounded-lg text-sm mt-2"
                   >

@@ -10,30 +10,47 @@ export class ApiError extends Error {
   }
 }
 
-function getToken() {
-  return typeof window !== 'undefined'
-    ? localStorage.getItem('erp_token')
-    : null;
+export const SESSION_USER_KEY = 'erp_user';
+
+export function clearSession() {
+  if (typeof window === 'undefined') return;
+  // O token JWT fica em cookie HttpOnly (inacessível ao JS). Aqui só guardamos
+  // dados não sensíveis do usuário para exibição e gating visual da UI.
+  localStorage.removeItem(SESSION_USER_KEY);
+  localStorage.removeItem('erp_token'); // remove resíduo de versões anteriores
+}
+
+export function storeSessionUser(user: any) {
+  if (typeof window === 'undefined' || !user) return;
+  localStorage.setItem(SESSION_USER_KEY, JSON.stringify(user));
+}
+
+export function getSessionUser(): any {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem(SESSION_USER_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
 }
 
 export async function apiFetch<T = any>(
   endpoint: string,
   options: RequestInit = {},
 ): Promise<T> {
-  const token = getToken();
-
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...((options.headers as Record<string, string>) || {}),
   };
-
-  if (token) headers.Authorization = `Bearer ${token}`;
 
   let res: Response;
   try {
     res = await fetch(`${API_URL}${endpoint}`, {
       ...options,
       headers,
+      // Envia/recebe o cookie de sessão (HttpOnly) em todas as chamadas.
+      credentials: 'include',
       // Dados operacionais mudam a todo momento: nunca reaproveitar cache HTTP
       // (evita respostas 304 sem corpo que travavam as telas em "Carregando").
       cache: 'no-store',
@@ -46,12 +63,12 @@ export async function apiFetch<T = any>(
   }
 
   if (res.status === 401) {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('erp_token');
-      localStorage.removeItem('erp_user');
-      if (!window.location.pathname.startsWith('/login')) {
-        window.location.href = '/login';
-      }
+    clearSession();
+    if (
+      typeof window !== 'undefined' &&
+      !window.location.pathname.startsWith('/login')
+    ) {
+      window.location.href = '/login';
     }
     throw new ApiError('Sessão expirada. Faça login novamente.', 401);
   }

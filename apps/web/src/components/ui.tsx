@@ -96,7 +96,8 @@ export function Feedback({
       {onClose && (
         <button
           onClick={onClose}
-          className="text-xs underline opacity-70 hover:opacity-100"
+          data-testid="btn-fechar-feedback"
+          className="text-xs font-semibold underline hover:no-underline focus:outline-none focus:ring-2 focus:ring-current rounded"
         >
           fechar
         </button>
@@ -107,7 +108,7 @@ export function Feedback({
 
 export function LoadingBlock({ label = 'Carregando dados...' }: { label?: string }) {
   return (
-    <div className="flex items-center justify-center gap-2 p-10 text-slate-500 text-sm">
+    <div className="flex items-center justify-center gap-2 p-10 text-slate-600 text-sm">
       <Loader2 className="w-5 h-5 animate-spin" />
       {label}
     </div>
@@ -124,7 +125,7 @@ export function EmptyState({
   return (
     <div className="p-8 text-center border border-dashed border-slate-300 rounded-xl bg-slate-50">
       <p className="text-sm font-semibold text-slate-700">{title}</p>
-      {description && <p className="text-xs text-slate-500 mt-1">{description}</p>}
+      {description && <p className="text-xs text-slate-600 mt-1">{description}</p>}
     </div>
   );
 }

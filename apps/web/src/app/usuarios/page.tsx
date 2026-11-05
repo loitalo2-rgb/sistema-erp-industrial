@@ -8,7 +8,7 @@ import {
   KpiCard,
   LoadingBlock,
 } from '../../components/ui';
-import { api } from '../../lib/api';
+import { api, getSessionUser, storeSessionUser } from '../../lib/api';
 import { dateTime } from '../../lib/format';
 import {
   CheckCircle2,
@@ -75,20 +75,14 @@ export default function UsuariosPage() {
   }, []);
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem('erp_user');
-      const stored = raw ? JSON.parse(raw) : null;
-      if (stored?.role !== 'ADMIN') {
-        setAuthorized(false);
-        setLoading(false);
-        return;
-      }
-      setAuthorized(true);
-      load();
-    } catch {
+    const stored = getSessionUser();
+    if (stored?.role !== 'ADMIN') {
       setAuthorized(false);
       setLoading(false);
+      return;
     }
+    setAuthorized(true);
+    load();
   }, [load]);
 
   const summary = useMemo(
@@ -130,10 +124,9 @@ export default function UsuariosPage() {
       setFeedback(message);
       await load();
 
-      const raw = localStorage.getItem('erp_user');
-      const stored = raw ? JSON.parse(raw) : null;
+      const stored = getSessionUser();
       if (stored?.id === updated.id) {
-        localStorage.setItem('erp_user', JSON.stringify(updated));
+        storeSessionUser(updated);
       }
     } catch (err: any) {
       setError(err.message);
@@ -192,13 +185,15 @@ export default function UsuariosPage() {
           <div className="flex gap-2">
             <button
               onClick={load}
-              className="flex items-center gap-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-4 py-2 rounded-lg text-sm font-semibold"
+              data-testid="btn-atualizar-usuarios"
+              className="flex items-center gap-2 bg-white border border-slate-400 hover:bg-slate-50 text-slate-800 px-4 py-2 rounded-lg text-sm font-semibold"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
               Atualizar
             </button>
             <button
               onClick={() => setShowForm((value) => !value)}
+              data-testid="btn-novo-usuario"
               className="flex items-center gap-2 bg-industrial-600 hover:bg-industrial-700 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm"
             >
               {showForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
@@ -248,6 +243,7 @@ export default function UsuariosPage() {
         {showForm && (
           <form
             onSubmit={submit}
+            data-testid="form-usuario"
             className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-3"
           >
             <h4 className="text-sm font-bold text-slate-800">Novo usuário</h4>
@@ -257,10 +253,13 @@ export default function UsuariosPage() {
                   Nome
                 </label>
                 <input
+                  id="usuario-nome"
+                  data-testid="input-usuario-nome"
+                  name="name"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm"
+                  className="w-full bg-slate-50 border border-slate-400 rounded-lg px-3 py-2 text-sm"
                 />
               </div>
               <div>
@@ -268,11 +267,14 @@ export default function UsuariosPage() {
                   E-mail
                 </label>
                 <input
+                  id="usuario-email"
+                  data-testid="input-usuario-email"
+                  name="email"
                   required
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm"
+                  className="w-full bg-slate-50 border border-slate-400 rounded-lg px-3 py-2 text-sm"
                 />
               </div>
               <div>
@@ -280,12 +282,15 @@ export default function UsuariosPage() {
                   Senha inicial
                 </label>
                 <input
+                  id="usuario-senha"
+                  data-testid="input-usuario-senha"
+                  name="password"
                   required
                   type="password"
                   minLength={6}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm"
+                  className="w-full bg-slate-50 border border-slate-400 rounded-lg px-3 py-2 text-sm"
                 />
               </div>
             </div>
@@ -295,9 +300,12 @@ export default function UsuariosPage() {
                   Perfil de acesso
                 </label>
                 <select
+                  id="usuario-perfil"
+                  data-testid="select-usuario-perfil"
+                  name="role"
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm"
+                  className="w-full bg-slate-50 border border-slate-400 rounded-lg px-3 py-2 text-sm"
                 >
                   {roles.map((value) => (
                     <option key={value} value={value}>
@@ -308,6 +316,7 @@ export default function UsuariosPage() {
               </div>
               <button
                 type="submit"
+                data-testid="btn-criar-usuario"
                 disabled={saving}
                 className="md:col-span-3 bg-industrial-600 hover:bg-industrial-700 disabled:opacity-60 text-white px-4 py-2 rounded-lg text-sm font-semibold"
               >

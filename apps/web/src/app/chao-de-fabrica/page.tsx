@@ -260,7 +260,7 @@ export default function ChaoDeFabricaPage() {
                   className={`px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 ${
                     isRunning
                       ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                      : 'bg-slate-800 text-slate-400'
+                      : 'bg-slate-800 text-slate-300'
                   }`}
                 >
                   <span

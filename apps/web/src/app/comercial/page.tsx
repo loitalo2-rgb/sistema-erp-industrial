@@ -247,6 +247,7 @@ export default function ComercialPage() {
         {showForm && (
           <form
             onSubmit={submit}
+            data-testid="form-venda"
             className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4"
           >
             <h4 className="text-sm font-bold text-slate-800">
@@ -259,10 +260,13 @@ export default function ComercialPage() {
                   Número do pedido
                 </label>
                 <input
+                  id="venda-numero"
+                  data-testid="input-venda-numero"
+                  name="orderNumber"
                   value={orderNumber}
                   onChange={(e) => setOrderNumber(e.target.value)}
                   placeholder="Automático se vazio"
-                  className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm"
+                  className="w-full bg-slate-50 border border-slate-400 rounded-lg px-3 py-2 text-sm"
                 />
               </div>
               <div className="md:col-span-2">
@@ -270,10 +274,13 @@ export default function ComercialPage() {
                   Cliente
                 </label>
                 <select
+                  id="venda-cliente"
+                  data-testid="select-venda-cliente"
+                  name="partnerId"
                   required
                   value={partnerId}
                   onChange={(e) => setPartnerId(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm"
+                  className="w-full bg-slate-50 border border-slate-400 rounded-lg px-3 py-2 text-sm"
                 >
                   <option value="">Selecione o cliente...</option>
                   {partners.map((partner) => (
@@ -425,12 +432,14 @@ export default function ComercialPage() {
                     setShowForm(false);
                     resetForm();
                   }}
-                  className="px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-100"
+                  data-testid="btn-cancelar-venda"
+                  className="px-4 py-2 rounded-lg text-sm font-semibold text-slate-700 border border-slate-300 hover:bg-slate-100"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
+                  data-testid="btn-aprovar-venda"
                   disabled={saving}
                   className="bg-industrial-600 hover:bg-industrial-700 disabled:opacity-50 text-white px-5 py-2 rounded-lg text-sm font-semibold"
                 >

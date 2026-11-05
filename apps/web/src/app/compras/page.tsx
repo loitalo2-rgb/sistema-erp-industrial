@@ -213,6 +213,7 @@ export default function ComprasPage() {
             </button>
             <button
               onClick={() => setShowForm((value) => !value)}
+              data-testid="btn-novo-pedido-compra"
               className="flex items-center gap-2 bg-industrial-600 hover:bg-industrial-700 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm"
             >
               {showForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
@@ -262,6 +263,7 @@ export default function ComprasPage() {
         {showForm && (
           <form
             onSubmit={submit}
+            data-testid="form-compra"
             className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4"
           >
             <h4 className="text-sm font-bold text-slate-800">
@@ -274,10 +276,13 @@ export default function ComprasPage() {
                   Fornecedor
                 </label>
                 <select
+                  id="compra-fornecedor"
+                  data-testid="select-compra-fornecedor"
+                  name="partnerId"
                   required
                   value={partnerId}
                   onChange={(e) => setPartnerId(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm"
+                  className="w-full bg-slate-50 border border-slate-400 rounded-lg px-3 py-2 text-sm"
                 >
                   <option value="">Selecione o fornecedor...</option>
                   {partners.map((partner) => (
@@ -292,10 +297,13 @@ export default function ComprasPage() {
                   Entrega prevista
                 </label>
                 <input
+                  id="compra-entrega"
+                  data-testid="input-compra-entrega"
+                  name="deliveryDate"
                   type="date"
                   value={deliveryDate}
                   onChange={(e) => setDeliveryDate(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm"
+                  className="w-full bg-slate-50 border border-slate-400 rounded-lg px-3 py-2 text-sm"
                 />
               </div>
             </div>
@@ -425,16 +433,18 @@ export default function ComprasPage() {
               <div className="flex gap-3">
                 <button
                   type="button"
+                  data-testid="btn-cancelar-compra"
                   onClick={() => {
                     setShowForm(false);
                     resetForm();
                   }}
-                  className="px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-100"
+                  className="px-4 py-2 rounded-lg text-sm font-semibold text-slate-700 border border-slate-300 hover:bg-slate-100"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
+                  data-testid="btn-aprovar-compra"
                   disabled={saving}
                   className="bg-industrial-600 hover:bg-industrial-700 disabled:opacity-50 text-white px-5 py-2 rounded-lg text-sm font-semibold"
                 >
@@ -521,7 +531,7 @@ export default function ComprasPage() {
                             </button>
                           )}
                           {order.status === 'RECEBIDO' && (
-                            <span className="text-slate-400 inline-flex items-center gap-1">
+                            <span className="text-slate-600 inline-flex items-center gap-1">
                               <CheckCircle2 className="w-3.5 h-3.5" /> No estoque
                             </span>
                           )}

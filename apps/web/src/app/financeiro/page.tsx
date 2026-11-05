@@ -230,6 +230,7 @@ export default function FinanceiroPage() {
         {showForm && (
           <form
             onSubmit={submit}
+            data-testid="form-financeiro"
             className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-3"
           >
             <h4 className="text-sm font-bold text-slate-800">
@@ -241,10 +242,13 @@ export default function FinanceiroPage() {
                   Descrição
                 </label>
                 <input
+                  id="financeiro-descricao"
+                  data-testid="input-financeiro-descricao"
+                  name="description"
                   required
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm"
+                  className="w-full bg-slate-50 border border-slate-400 rounded-lg px-3 py-2 text-sm"
                 />
               </div>
               <div>
@@ -340,6 +344,7 @@ export default function FinanceiroPage() {
             <div className="flex justify-end">
               <button
                 type="submit"
+                data-testid="btn-salvar-lancamento"
                 disabled={saving}
                 className="bg-industrial-600 hover:bg-industrial-700 disabled:opacity-50 text-white px-5 py-2 rounded-lg text-sm font-semibold"
               >
@@ -466,7 +471,7 @@ export default function FinanceiroPage() {
                                 </button>
                               )}
                             {title.status === 'PAGO' && (
-                              <span className="text-slate-400 inline-flex items-center gap-1">
+                              <span className="text-slate-600 inline-flex items-center gap-1">
                                 <CheckCircle2 className="w-3.5 h-3.5" />
                                 {date(title.paymentDate)}
                               </span>

@@ -4,7 +4,8 @@ Sistema Integrado de Gestão Industrial desenvolvido para controle de ponta a po
 
 > **Etapa 3 concluída:** integração real de todas as telas, módulos de **Compras** e **Relatórios**, e correções de cache HTTP e de filtro de datas.
 > **Etapa 4 concluída:** **RBAC** por perfil, gestão de **Usuários**, **Auditoria** automática de operações e **smoke test** automatizado.
-> Detalhes em [`RELATORIO-ETAPA-3.md`](./RELATORIO-ETAPA-3.md) e [`RELATORIO-ETAPA-4.md`](./RELATORIO-ETAPA-4.md).
+> **Etapa 5 concluída:** **CSP e headers de segurança**, sessão por **cookie HttpOnly/SameSite/Secure**, **IDs estáveis para RPA** e correções de **contraste WCAG**.
+> Detalhes em [`RELATORIO-ETAPA-3.md`](./RELATORIO-ETAPA-3.md), [`RELATORIO-ETAPA-4.md`](./RELATORIO-ETAPA-4.md) e [`RELATORIO-ETAPA-5.md`](./RELATORIO-ETAPA-5.md).
 
 ---
 
@@ -22,6 +23,9 @@ Sistema Integrado de Gestão Industrial desenvolvido para controle de ponta a po
   * Relatórios consolidados com exportação CSV
   * Gestão de usuários e governança de acessos (RBAC)
   * Trilha de auditoria de todas as operações de escrita
+  * Sessão por cookie HttpOnly com SameSite e Secure
+  * Content Security Policy (CSP) e headers de segurança
+  * Seletores estáveis (`id` e `data-testid`) para automação RPA
 * **Backend (`apps/api`)**: Node.js + NestJS (TypeScript)
   * Arquitetura modular corporativa
   * Autenticação JWT com controle de perfis de acesso (RBAC) aplicado globalmente
@@ -90,6 +94,7 @@ sistema erp italo contabilidade/
 ├── .env.example                      # Variáveis de ambiente
 ├── RELATORIO-ETAPA-3.md              # Relatório da Etapa 3
 ├── RELATORIO-ETAPA-4.md              # Relatório da Etapa 4
+├── RELATORIO-ETAPA-5.md              # Relatório da Etapa 5
 └── Plano de Arquitetura e Módulos ERP Industrial.pdf
 ```
 
@@ -165,7 +170,7 @@ npm --workspace=apps/web run start
 
 | Módulo | Endpoints |
 | --- | --- |
-| Auth | `POST /auth/login`, `POST /auth/register`, `GET /auth/me` |
+| Auth | `POST /auth/login`, `POST /auth/logout`, `POST /auth/register`, `GET /auth/me` |
 | Cadastros | `GET/POST /cadastros/itens`, `PUT /cadastros/itens/:id`, `PATCH /cadastros/itens/:id/desativar`, equivalentes para `parceiros` |
 | Engenharia | `GET/POST /engenharia/bom`, `GET /engenharia/bom/produto/:productId`, `GET/POST /engenharia/roteiros`, `GET/POST /engenharia/centros-trabalho` |
 | MRP | `GET /mrp/calcular` |
@@ -211,11 +216,24 @@ Com a API em execução e o seed aplicado:
 npm run test:smoke
 ```
 
-O script valida login, rotas protegidas, dashboard, relatórios, RBAC (403 para perfil sem permissão), auditoria e bloqueio de cadastro anônimo. Sai com código de erro se qualquer verificação falhar.
+O script valida login, atributos do cookie de sessão, logout, rotas protegidas, dashboard, relatórios, RBAC (403 para perfil sem permissão), auditoria e bloqueio de cadastro anônimo. Sai com código de erro se qualquer verificação falhar.
+
+---
+
+## 🔒 Segurança
+
+- **Sessão por cookie**: o login grava o JWT em `erp_token`, com `HttpOnly`, `SameSite=Lax`, `Secure` (HTTPS/localhost) e expiração de 7 dias. O token não fica acessível ao JavaScript da página.
+- **Compatibilidade**: clientes de API e o smoke test continuam podendo usar `Authorization: Bearer <token>`.
+- **CSP**: aplicada pelo Next.js em todas as rotas, com `frame-ancestors 'none'`, `object-src 'none'` e `connect-src` restrito ao frontend e à API.
+- **Headers**: `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy`, `Permissions-Policy` e HSTS em produção.
+- **CORS**: restrito às origens do frontend (`http://localhost:3000` e `http://127.0.0.1:3000` por padrão) com `credentials: true`. Ajuste via `CORS_ORIGINS` em produção.
+- **RPA**: formulários e botões principais possuem `id`/`data-testid` estáveis (ex.: `input-email`, `input-password`, `btn-login`, `nav-compras`, `btn-aprovar-compra`).
+- **Contraste**: textos secundários, links e botões foram ajustados para atender WCAG 2.2 AA (mínimo 4.5:1).
 
 ---
 
 - [`RELATORIO-ETAPA-3.md`](./RELATORIO-ETAPA-3.md) — integração total, Compras e Relatórios.
 - [`RELATORIO-ETAPA-4.md`](./RELATORIO-ETAPA-4.md) — RBAC, Usuários, Auditoria e testes automatizados.
+- [`RELATORIO-ETAPA-5.md`](./RELATORIO-ETAPA-5.md) — CSP, cookie de sessão, IDs estáveis e contraste.
 - `Plano de Arquitetura e Módulos ERP Industrial.pdf` — visão de arquitetura.
 - `Manual de Operação e Documentação Técnica - ERP Industrial.pdf` — manual de operação.

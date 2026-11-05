@@ -200,6 +200,7 @@ export default function EngenhariaPage() {
         {showForm && (
           <form
             onSubmit={submit}
+            data-testid="form-bom"
             className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4"
           >
             <h4 className="text-sm font-bold text-slate-800">
@@ -212,11 +213,14 @@ export default function EngenhariaPage() {
                   Código BOM
                 </label>
                 <input
+                  id="bom-codigo"
+                  data-testid="input-bom-codigo"
+                  name="code"
                   required
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
                   placeholder="BOM-ARMARIO-02"
-                  className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm"
+                  className="w-full bg-slate-50 border border-slate-400 rounded-lg px-3 py-2 text-sm"
                 />
               </div>
               <div className="md:col-span-2">
@@ -385,6 +389,7 @@ export default function EngenhariaPage() {
               </button>
               <button
                 type="submit"
+                data-testid="btn-salvar-bom"
                 disabled={saving}
                 className="bg-industrial-600 hover:bg-industrial-700 disabled:opacity-50 text-white px-5 py-2 rounded-lg text-sm font-semibold"
               >
@@ -423,7 +428,7 @@ export default function EngenhariaPage() {
                       </p>
                     </div>
                     <div className="text-right">
-                      <span className="text-xs text-slate-400">
+                      <span className="text-xs text-slate-600">
                         Custo estimado por unidade
                       </span>
                       <p className="text-sm font-bold text-slate-800">

@@ -8,7 +8,7 @@ import {
   KpiCard,
   LoadingBlock,
 } from '../../components/ui';
-import { api } from '../../lib/api';
+import { api, getSessionUser } from '../../lib/api';
 import { dateTime, todayISO } from '../../lib/format';
 import {
   Activity,
@@ -33,6 +33,7 @@ const ACTION_LABELS: Record<string, string> = {
   ALTERAR_STATUS: 'Alterar status',
   ALTERAR_SENHA: 'Alterar senha',
   LOGIN: 'Login',
+  LOGOUT: 'Logout',
 };
 
 const ACTION_TONES: Record<string, string> = {
@@ -47,6 +48,7 @@ const ACTION_TONES: Record<string, string> = {
   ALTERAR_STATUS: 'bg-amber-50 text-amber-700 border-amber-200',
   ALTERAR_SENHA: 'bg-slate-100 text-slate-700 border-slate-200',
   LOGIN: 'bg-sky-50 text-sky-700 border-sky-200',
+  LOGOUT: 'bg-slate-100 text-slate-700 border-slate-200',
 };
 
 export default function AuditoriaPage() {
@@ -94,24 +96,18 @@ export default function AuditoriaPage() {
   );
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem('erp_user');
-      const stored = raw ? JSON.parse(raw) : null;
-      if (stored?.role !== 'ADMIN') {
-        setAuthorized(false);
-        setLoading(false);
-        return;
-      }
-      setAuthorized(true);
-      api
-        .get('/auditoria/filtros')
-        .then(setOptions)
-        .catch(() => undefined);
-      load(1);
-    } catch {
+    const stored = getSessionUser();
+    if (stored?.role !== 'ADMIN') {
       setAuthorized(false);
       setLoading(false);
+      return;
     }
+    setAuthorized(true);
+    api
+      .get('/auditoria/filtros')
+      .then(setOptions)
+      .catch(() => undefined);
+    load(1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -149,7 +145,8 @@ export default function AuditoriaPage() {
           </div>
           <button
             onClick={() => load(page)}
-            className="flex items-center gap-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-4 py-2 rounded-lg text-sm font-semibold"
+            data-testid="btn-atualizar-auditoria"
+            className="flex items-center gap-2 bg-white border border-slate-400 hover:bg-slate-50 text-slate-800 px-4 py-2 rounded-lg text-sm font-semibold"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             Atualizar
@@ -188,6 +185,7 @@ export default function AuditoriaPage() {
         </div>
 
         <form
+          data-testid="form-filtros-auditoria"
           onSubmit={(e) => {
             e.preventDefault();
             load(1);
@@ -199,10 +197,13 @@ export default function AuditoriaPage() {
               Buscar
             </label>
             <input
+              id="auditoria-busca"
+              data-testid="input-auditoria-busca"
+              name="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="usuário, ação, módulo ou rota"
-              className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm"
+              className="w-full bg-slate-50 border border-slate-400 rounded-lg px-3 py-2 text-sm"
             />
           </div>
           <div>
@@ -263,6 +264,7 @@ export default function AuditoriaPage() {
           </div>
           <button
             type="submit"
+            data-testid="btn-aplicar-filtros"
             className="md:col-span-6 flex items-center justify-center gap-2 bg-industrial-600 hover:bg-industrial-700 text-white px-4 py-2 rounded-lg text-sm font-semibold"
           >
             <Filter className="w-4 h-4" /> Aplicar filtros

@@ -78,6 +78,7 @@ export class AuditInterceptor implements NestInterceptor {
   }
 
   private resolveAction(method: string, path: string) {
+    if (path.endsWith('/auth/logout')) return 'LOGOUT';
     if (path.endsWith('/faturar')) return 'FATURAR';
     if (path.endsWith('/receber')) return 'RECEBER';
     if (path.endsWith('/pagar')) return 'PAGAR';

@@ -254,6 +254,7 @@ export default function EstoquePage() {
         {showMovement && (
           <form
             onSubmit={submitMovement}
+            data-testid="form-movimentacao"
             className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3"
           >
             <div className="flex items-center justify-between">
@@ -363,6 +364,7 @@ export default function EstoquePage() {
             <div className="flex justify-end">
               <button
                 type="submit"
+                data-testid="btn-lancar-movimentacao"
                 disabled={saving}
                 className="bg-industrial-600 hover:bg-industrial-700 disabled:opacity-50 text-white px-4 py-2 rounded-lg text-sm font-semibold"
               >
@@ -375,6 +377,7 @@ export default function EstoquePage() {
         {showLot && (
           <form
             onSubmit={submitLot}
+            data-testid="form-lote"
             className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3"
           >
             <div className="flex items-center justify-between">
@@ -395,11 +398,14 @@ export default function EstoquePage() {
                   Número do lote
                 </label>
                 <input
+                  id="lote-numero"
+                  data-testid="input-lote-numero"
+                  name="lotNumber"
                   required
                   value={lotNumber}
                   onChange={(e) => setLotNumber(e.target.value)}
                   placeholder="LT-2026-0001"
-                  className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm"
+                  className="w-full bg-slate-50 border border-slate-400 rounded-lg px-3 py-2 text-sm"
                 />
               </div>
               <div>
@@ -446,6 +452,7 @@ export default function EstoquePage() {
             <div className="flex justify-end">
               <button
                 type="submit"
+                data-testid="btn-salvar-lote"
                 disabled={saving}
                 className="bg-industrial-600 hover:bg-industrial-700 disabled:opacity-50 text-white px-4 py-2 rounded-lg text-sm font-semibold"
               >
